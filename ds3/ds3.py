@@ -157,6 +157,7 @@ class Bucket(object):
     self.elements = {
       'CreationDate' : None,
       'DataPolicyId' : None,
+      'Empty' : None,
       'Id' : None,
       'LastPreferredChunkSizeInBytes' : None,
       'LogicalUsedCapacity' : None,
@@ -241,6 +242,8 @@ class DataPathBackend(object):
       'AutoActivateTimeoutInMins' : None,
       'AutoInspect' : None,
       'DefaultImportConflictResolutionMode' : None,
+      'DefaultVerifyDataAfterImport' : None,
+      'DefaultVerifyDataPriorToImport' : None,
       'Id' : None,
       'InstanceId' : None,
       'LastHeartbeat' : None,
@@ -363,8 +366,10 @@ class ActiveJob(object):
       'OriginalSizeInBytes' : None,
       'Priority' : None,
       'Rechunked' : None,
+      'Replicating' : None,
       'RequestType' : None,
       'Truncated' : None,
+      'TruncatedDueToTimeout' : None,
       'UserId' : None
     }
     self.element_lists = {}
@@ -2587,7 +2592,7 @@ class GetDataPlannerBlobStoreTasksSpectraS3Request(AbstractRequest):
 
 class ModifyDataPathBackendSpectraS3Request(AbstractRequest):
   
-  def __init__(self, activated=None, auto_activate_timeout_in_mins=None, auto_inspect=None, default_import_conflict_resolution_mode=None, partially_verify_last_percent_of_tapes=None, unavailable_media_policy=None, unavailable_pool_max_job_retry_in_mins=None, unavailable_tape_partition_max_job_retry_in_mins=None):
+  def __init__(self, activated=None, auto_activate_timeout_in_mins=None, auto_inspect=None, default_import_conflict_resolution_mode=None, default_verify_data_after_import=None, default_verify_data_prior_to_import=None, partially_verify_last_percent_of_tapes=None, unavailable_media_policy=None, unavailable_pool_max_job_retry_in_mins=None, unavailable_tape_partition_max_job_retry_in_mins=None):
     super(ModifyDataPathBackendSpectraS3Request, self).__init__()
 
 
@@ -2599,6 +2604,10 @@ class ModifyDataPathBackendSpectraS3Request(AbstractRequest):
       self.query_params['auto_inspect'] = auto_inspect
     if default_import_conflict_resolution_mode is not None:
       self.query_params['default_import_conflict_resolution_mode'] = default_import_conflict_resolution_mode
+    if default_verify_data_after_import is not None:
+      self.query_params['default_verify_data_after_import'] = default_verify_data_after_import
+    if default_verify_data_prior_to_import is not None:
+      self.query_params['default_verify_data_prior_to_import'] = default_verify_data_prior_to_import
     if partially_verify_last_percent_of_tapes is not None:
       self.query_params['partially_verify_last_percent_of_tapes'] = partially_verify_last_percent_of_tapes
     if unavailable_media_policy is not None:
@@ -6328,6 +6337,23 @@ class ForceTargetEnvironmentRefreshSpectraS3Request(AbstractRequest):
     self.path = '/_rest_/target_environment'
     self.http_verb = HttpVerb.PUT
 
+class GetBlobsOnDs3TargetSpectraS3Request(AbstractRequest):
+  
+  def __init__(self, ds3_target, object_list):
+    super(GetBlobsOnDs3TargetSpectraS3Request, self).__init__()
+    self.ds3_target = ds3_target
+    self.query_params['operation'] = 'get_physical_placement'
+
+    if object_list is not None:
+      if not isinstance(object_list, FileObjectList):
+        raise TypeError('GetBlobsOnDs3TargetSpectraS3Request should have request payload of type: FileObjectList')
+      self.body = xmldom.tostring(object_list.to_xml())
+
+
+
+    self.path = '/_rest_/ds3_target/' + ds3_target
+    self.http_verb = HttpVerb.GET
+
 class GetDs3TargetDataPoliciesSpectraS3Request(AbstractRequest):
   
   def __init__(self, ds3_target_data_policies):
@@ -8896,6 +8922,13 @@ class ForceTargetEnvironmentRefreshSpectraS3Response(AbstractResponse):
     self.__check_status_codes__([204])
     
 
+class GetBlobsOnDs3TargetSpectraS3Response(AbstractResponse):
+  
+  def process_response(self, response):
+    self.__check_status_codes__([200])
+    if self.response.status == 200:
+      self.result = parseModel(xmldom.fromstring(response.read()), BulkObjectList())
+
 class GetDs3TargetDataPoliciesSpectraS3Response(AbstractResponse):
   
   def process_response(self, response):
@@ -10153,6 +10186,10 @@ class Client(object):
   
   def force_target_environment_refresh_spectra_s3(self, request):
     return ForceTargetEnvironmentRefreshSpectraS3Response(self.net_client.get_response(request), request)
+
+  
+  def get_blobs_on_ds3_target_spectra_s3(self, request):
+    return GetBlobsOnDs3TargetSpectraS3Response(self.net_client.get_response(request), request)
 
   
   def get_ds3_target_data_policies_spectra_s3(self, request):
