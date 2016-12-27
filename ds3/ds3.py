@@ -290,6 +290,7 @@ class DataPolicy(object):
     self.elements = {
       'AlwaysForcePutJobCreation' : None,
       'AlwaysMinimizeSpanningAcrossMedia' : None,
+      'AlwaysReplicateDeletes' : None,
       'BlobbingEnabled' : None,
       'ChecksumType' : None,
       'CreationDate' : None,
@@ -300,6 +301,7 @@ class DataPolicy(object):
       'DefaultVerifyJobPriority' : None,
       'EndToEndCrcRequired' : None,
       'Id' : None,
+      'LtfsObjectNamingAllowed' : None,
       'Name' : None,
       'RebuildPriority' : None,
       'Versioning' : None
@@ -3304,13 +3306,15 @@ class GetS3DataReplicationRulesSpectraS3Request(AbstractRequest):
 
 class ModifyAzureDataReplicationRuleSpectraS3Request(AbstractRequest):
   
-  def __init__(self, azure_data_replication_rule, max_blob_part_size_in_bytes=None, type=None):
+  def __init__(self, azure_data_replication_rule, max_blob_part_size_in_bytes=None, replicate_deletes=None, type=None):
     super(ModifyAzureDataReplicationRuleSpectraS3Request, self).__init__()
     self.azure_data_replication_rule = azure_data_replication_rule
 
 
     if max_blob_part_size_in_bytes is not None:
       self.query_params['max_blob_part_size_in_bytes'] = max_blob_part_size_in_bytes
+    if replicate_deletes is not None:
+      self.query_params['replicate_deletes'] = replicate_deletes
     if type is not None:
       self.query_params['type'] = type
 
@@ -3373,11 +3377,13 @@ class ModifyDataPolicySpectraS3Request(AbstractRequest):
 
 class ModifyDs3DataReplicationRuleSpectraS3Request(AbstractRequest):
   
-  def __init__(self, ds3_data_replication_rule, target_data_policy=None, type=None):
+  def __init__(self, ds3_data_replication_rule, replicate_deletes=None, target_data_policy=None, type=None):
     super(ModifyDs3DataReplicationRuleSpectraS3Request, self).__init__()
     self.ds3_data_replication_rule = ds3_data_replication_rule
 
 
+    if replicate_deletes is not None:
+      self.query_params['replicate_deletes'] = replicate_deletes
     if target_data_policy is not None:
       self.query_params['target_data_policy'] = target_data_policy
     if type is not None:
@@ -3388,7 +3394,7 @@ class ModifyDs3DataReplicationRuleSpectraS3Request(AbstractRequest):
 
 class ModifyS3DataReplicationRuleSpectraS3Request(AbstractRequest):
   
-  def __init__(self, s3_data_replication_rule, initial_data_placement=None, max_blob_part_size_in_bytes=None, type=None):
+  def __init__(self, s3_data_replication_rule, initial_data_placement=None, max_blob_part_size_in_bytes=None, replicate_deletes=None, type=None):
     super(ModifyS3DataReplicationRuleSpectraS3Request, self).__init__()
     self.s3_data_replication_rule = s3_data_replication_rule
 
@@ -3397,6 +3403,8 @@ class ModifyS3DataReplicationRuleSpectraS3Request(AbstractRequest):
       self.query_params['initial_data_placement'] = initial_data_placement
     if max_blob_part_size_in_bytes is not None:
       self.query_params['max_blob_part_size_in_bytes'] = max_blob_part_size_in_bytes
+    if replicate_deletes is not None:
+      self.query_params['replicate_deletes'] = replicate_deletes
     if type is not None:
       self.query_params['type'] = type
 
