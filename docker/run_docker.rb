@@ -41,11 +41,11 @@ puts "DS3_SECRET_KEY #{ENV["DS3_SECRET_KEY"]}"
 puts "DS3_ACCESS_KEY #{ENV["DS3_ACCESS_KEY"]}"
 
 ENV["GIT_REPO"] = ENV["GIT_REPO"] || "https://github.com/SpectraLogic/ds3_python_sdk.git"
-ENV["GIT_BRANCH"] = ENV["GIT_BRANCH"] || "master"
+ENV["GIT_BRANCH"] = ENV["GIT_BRANCH"] || "3_4_0_autogen"
 puts "GIT_REPO #{ENV["GIT_REPO"] || "default"}"
 puts "GIT_BRANCH #{ENV["GIT_BRANCH"]}"
 
-ENV["DOCKER_REPO"] =  ENV["DOCKER_REPO"] || "spectralogic/ds3_python_sdk_test:latest"
+ENV["DOCKER_REPO"] =  ENV["DOCKER_REPO"] || "spectralogic/ds3_python_docker_test:latest"
 puts "DOCKER_REPO #{ENV["DOCKER_REPO"]}"
  
 # Close the git repo
